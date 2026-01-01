@@ -1,0 +1,74 @@
+import React from "react";
+import { Download, CheckCircle, Plus } from "lucide-react";
+
+interface DownloadResultProps {
+  title?: string;
+  description?: string;
+  fileUrl: string;
+  SelectType: string;
+  fileName: string;
+  operationType: string;
+  onClose?: () => void;
+}
+
+export default function DownloadResult({
+  description = "Click below to download your processed file",
+  fileUrl,
+  fileName,
+  SelectType,
+  operationType,
+  onClose,
+}: DownloadResultProps) {
+  const handleDownload = () => {
+    const link = document.createElement("a");
+    link.href = fileUrl;
+    link.download = fileName;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
+  return (
+    <div className="fixed inset-0 z-50 bg-gray-100 flex justify-center p-6 mt-20">
+      <div className="w-[420px] text-center space-y-6">
+        <CheckCircle className="mx-auto h-14 w-14 text-red-600" />
+        <div>
+          <h2 className="text-2xl font-semibold text-gray-900">
+           {operationType === "convert"
+              ? `Your ${SelectType} has been converted !`
+              : ""}
+            {operationType === "merge"
+              ? "Your PDFs have been merged !"
+              : ""}
+              {operationType === "compress"
+              ? "Your PDF has been compressed !"
+              : ""}
+              {operationType === "split"
+              ? " Your PDFs have been split !"
+              : ""}
+          </h2>
+          <p className="text-sm text-gray-500 mt-1">
+            {description}
+          </p>
+        </div>
+        <button
+          onClick={handleDownload}
+          className="w-full flex items-center cursor-pointer justify-center gap-2 bg-red-500 hover:bg-red-700 text-white text- py-5 rounded-lg font-bold transition"
+        >
+          <Download size={25} />
+          Download File
+        </button>
+        {/* {onClose && (
+          <button
+            onClick={onClose}
+            className="text-sm text-gray-400 hover:text-gray-600 transition"
+          >
+            Close
+          </button>
+        )}
+       */}
+       
+      </div>
+    </div>
+  );
+}
