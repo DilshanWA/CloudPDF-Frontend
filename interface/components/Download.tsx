@@ -46,6 +46,9 @@ export default function DownloadResult({
               {operationType === "split"
               ? " Your PDFs have been split !"
               : ""}
+              {operationType === "protect"
+              ? " Your PDF has been protected !"
+              : ""}
           </h2>
           <p className="text-sm text-gray-500 mt-1">
             {description}

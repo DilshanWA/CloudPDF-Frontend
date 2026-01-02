@@ -7,7 +7,7 @@ interface OperationDetails {
 }
 
 export const operationDetails: Record<
-  "convert" | "merge" | "compress" | "split",
+  "convert" | "merge" | "compress" | "split" | "protect",
   OperationDetails
 > = {
   convert: {
@@ -28,12 +28,18 @@ export const operationDetails: Record<
     description: "Split your PDF files into smaller, manageable documents.",
     buttonLabel: "Split PDF",
   },
+  protect: {
+    description: "Easily protect your PDF files with passwords and permissions.",
+    buttonLabel: "Protect PDF",
+  },
 };
 
 interface OperationPanelProps {
   files: File[];
-  operationtype: "convert" | "merge" | "compress" | "split";
+  operationtype: "convert" | "merge" | "compress" | "split" | "protect";
+  password?: string;
   title: string;
+  onPasswordChange: (password: string) => void;
   accept: string;
   isProcessing: boolean;
   onAddMoreFilesClick: (files: FileList) => void;
@@ -52,11 +58,16 @@ export function Sidebar({
   onOperationClick,
   accept,
   qualityOption,
+  onPasswordChange,
   setQualityOption,
   SelectType,
 }: OperationPanelProps) {
   const fileInputRef = React.useRef<HTMLInputElement>(null);
   const [mergeImages, setMergeImages] = useState(false);
+  const [isShowToggleIcon , setShowToggleIcon] = useState(false);
+  const [isShowpassword , setIsShowpassword] = useState(false);
+  const [password, setPassword] = useState("");
+  
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!e.target.files) return;
@@ -68,10 +79,7 @@ export function Sidebar({
     <aside className="w-full md:w-[420px] p-6 flex flex-col bg-white shadow-lg py-30">
       <h2 className="text-3xl font-bold mb-4">{title}</h2>
 
-      <p className="text-gray-700 mb-6">
-        {operationDetails[operationtype].description}
-      </p>
-
+      
       {SelectType === "Image" && (
         <label
           htmlFor="separateImagePDF"
@@ -87,6 +95,45 @@ export function Sidebar({
         </label>
       )}
 
+      {operationtype === "protect" && (
+        <div className="mb-6 relative">
+          <label htmlFor="password" className="block font-medium mb-1">
+            Set Password:
+          </label>
+
+          <input
+            type={isShowpassword ? "text" : "password"}
+            id="password"
+            value={password}
+            onChange={(e) => {
+              const value = e.target.value;
+              setPassword(value);
+              onPasswordChange(value);
+
+              if (value.length > 0) {
+                setShowToggleIcon(true);
+              } else {
+                setShowToggleIcon(false);
+                setIsShowpassword(false);
+              }
+            }}
+            className="border w-full mt-3 border-gray-300 rounded py-3 px-3 pr-16"
+            placeholder="Enter password to protect PDF"
+          />
+
+          {isShowToggleIcon && (
+            <span
+              className="absolute right-4 top-[52px] text-sm cursor-pointer text-red-600 select-none"
+              onClick={() => setIsShowpassword(!isShowpassword)}
+            >
+              {isShowpassword ? "Hide" : "Show"}
+            </span>
+          )}
+        </div>
+      )}
+
+
+
       {operationtype === "compress" ? (
         <div className="mb-6">
           <label htmlFor="compressionLevel" className="block font-medium mb-1">
@@ -95,7 +142,7 @@ export function Sidebar({
           <select
             id="compressionLevel"
             value={qualityOption}
-            onChange={(e) => setQualityOption(e.target.value as any)}
+            onFocus={(e) => setQualityOption(e.target.value as any)}
             className="border z-50 w-full mt-3 border-gray-300 rounded py-3 px-3"
           >
             <option value="low">Low (smaller size, lower quality)</option>
@@ -116,7 +163,7 @@ export function Sidebar({
             <option value="everyPage">Split every page into a separate PDF</option>
             <option value="customRange">Split by custom page ranges</option>
           </select>
-          
+
         </div>
         </>
       : (

@@ -12,12 +12,6 @@ export const metadata: Metadata = {
     "Easily convert documents, images, and more to PDF format with CloudPDF's free online tool.",
   keywords: ["PDF", "convert", "online", "documents", "images", "free tool", "ilovepdf.com", "word to pdf", "jpg to pdf", "png to pdf", "pdf converter"],
   authors: [{ name: "CloudPDF", url: "https://cloudpdf.com" }],
-  viewport: {
-    width: "device-width",
-    initialScale: 1,
-    maximumScale: 1,
-    userScalable: false
-  },
   icons: {
     icon: "/favicon.ico",
     shortcut: "/favicon-16x16.png",
@@ -35,9 +29,14 @@ export const metadata: Metadata = {
       },
     ],
   },
-  themeColor: "#ffffff"
-
 };
+
+export const viewpoint = {
+    width: "device-width",
+    initialScale: 1,
+    maximumScale: 1,
+    userScalable: false
+}
 
 
 

@@ -110,7 +110,7 @@ export default function FileUpload(props: FileUploadProps) {
           disabled={props.disabled}
         />
         <button
-         className='px-4 py-2 mt-4 bg-red-500 rounded-lg text-white font-bold rounded hover:bg-red-600 disabled:opacity-50'
+         className='px-4 py-2 mt-4 bg-red-500 rounded-lg cursor-pointer text-white font-bold rounded hover:bg-red-600 disabled:opacity-50'
          onClick={handleClickUpload}
          >
           Select {props.SelectType}

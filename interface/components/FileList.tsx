@@ -22,7 +22,7 @@ import {
 interface FileListProps {
   files: UploadedFile[];
   setFiles: React.Dispatch<React.SetStateAction<UploadedFile[]>>;
-  operationtype: "convert" | "merge" | "compress" | "split";
+  operationtype: "convert" | "merge" | "compress" | "split" | "protect";
   title: string;
   SelectType: string;
   accept: string;
@@ -34,51 +34,57 @@ export default function FileList({files, setFiles, operationtype, title, SelectT
   const [isProcessing, setIsProcessing] = useState(false);
   const [error, setError] = useState(false);
   const [downloadData, setDownloadData] = useState<{url: string;name: string;} | null>(null);
-  const [qualityOption, setQualityOption] =
-    useState<'low' | 'medium' | 'high'>('medium')
+  const [qualityOption, setQualityOption] =useState<'low' | 'medium' | 'high'>('medium')
+  const [password, setPassword] = useState("");
 
-
+  const sleep = (ms: number) =>
+  new Promise((resolve) => setTimeout(resolve, ms));
 
 
   const handleOperation = useCallback(async () => {
-    if (!files.length) return;
-    setIsProcessing(true);
-    setError(false);
-  
-    try {
-      const formData = new FormData();
-      formData.append("operationType", operationtype);
-      formData.append("qualityOption", qualityOption);
-      files.forEach((file) => formData.append("files", file.file));
+  if (!files.length) return;
 
+  setIsProcessing(true);
+  setError(false);
 
-      setTimeout(() => {})
+  try {
+    const formData = new FormData();
+    formData.append("operationType", operationtype);
+    formData.append("qualityOption", qualityOption);
+    formData.append("password", password);
 
-      const response = await fetch("/api/endpoint", {
+    files.forEach((file) => formData.append("files", file.file));
+
+    // ⏳ Fake loader (5s) + API call in parallel
+    const [response] = await Promise.all([
+      fetch("/api/endpoint", {
         method: "POST",
         body: formData,
-      });
+      }),
+      sleep(5000),
+    ]);
 
-      if (!response.ok) {
-        setError(true);
-        return;
-      }
-
-      const data = await response.json();
-
-      if (data.files_count === 1 || data.pdfUrl) {
-        downloadFile(data.pdfUrl, files[0].file.name);
-        setDownloadData({ url: data.pdfUrl, name: files[0].file.name });
-      } else if (files.length > 1 && data.zipUrl) {
-        downloadFile(data.zipUrl, "files.zip");
-        setDownloadData({ url: data.zipUrl, name: "files.zip" });
-      }
-    } catch (err) {
+    if (!response.ok) {
       setError(true);
-    } finally {
-      setIsProcessing(false);
+      return;
     }
-  }, [files, operationtype, qualityOption]);
+
+    const data = await response.json();
+
+    if (data.files_count === 1 || data.pdfUrl) {
+      downloadFile(data.pdfUrl, files[0].file.name);
+      setDownloadData({ url: data.pdfUrl, name: files[0].file.name });
+    } else if (files.length > 1 && data.zipUrl) {
+      downloadFile(data.zipUrl, "files.zip");
+      setDownloadData({ url: data.zipUrl, name: "files.zip" });
+    }
+  } catch (err) {
+    setError(true);
+  } finally {
+    setIsProcessing(false);
+  }
+}, [files, operationtype, qualityOption, password]);
+
 
   const downloadFile = (url: string, originalName: string) => {
     const link = document.createElement("a");
@@ -136,6 +142,7 @@ export default function FileList({files, setFiles, operationtype, title, SelectT
           operationtype={operationtype}
           accept={accept}
           title={title}
+          onPasswordChange={setPassword}
           SelectType={SelectType}
           qualityOption={qualityOption}
           setQualityOption={setQualityOption}

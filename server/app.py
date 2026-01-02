@@ -6,6 +6,7 @@ from file_manager import FileManager
 from converter import Converter
 from merge import Merger
 from compressor import Compressor
+from protector import Protector
 
 import os
 
@@ -16,6 +17,7 @@ file_manager = FileManager()
 converter = Converter(file_manager)
 merger = Merger(file_manager)
 compressor = Compressor(file_manager)
+protector = Protector(file_manager)
 
 @app.route('/convert', methods=['POST'])
 def convert_endpoint():
@@ -72,6 +74,7 @@ def merge_endpoint():
             "files_count": len(files)
         })
     except Exception as e:
+        print(e)
         return jsonify({"error": str(e)}), 500
 
 
@@ -97,6 +100,45 @@ def compress_endpoint():
             "pdf_url": pdf_url,
             "quality": quality
         })
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route('/protect', methods=['POST'])
+def protect_endpoint():
+    if 'files' not in request.files:
+        return jsonify({"error":" No files part"}), 400
+    files = request.files.getlist('files')
+    if not files or files[0].filename == '':
+        return jsonify({"error": "No selected file"}), 400
+    password = request.form.get('password', '')
+    if not password:
+        return jsonify({"error": "No password provided"}), 400
+    try:
+        pdf_files = [protector.protect_pdf(f, password) for f in files]
+        
+        if len(pdf_files) == 1:
+            pdf_url = url_for('download_file', filename=pdf_files[0], _external=True)
+            return jsonify({
+                "message": "Single PDF protected successfully",
+                "pdf_file": pdf_files[0],
+                "pdf_url": pdf_url,
+                "files_count": len(files)
+            })
+            
+        else:
+            pdf_paths = [os.path.join(file_manager.upload_folder, pdf) for pdf in pdf_files]
+            zip_id = uuid.uuid4().hex
+            zip_filename = f"protected_{zip_id}.zip"
+            zip_path = file_manager.create_zip(pdf_paths, zip_filename)
+            zip_url = url_for('download_zip', filename=zip_filename, _external=True)
+
+            return jsonify({
+                "message": "Multiple PDFs protected and zipped successfully",
+                "zip_file": zip_filename,
+                "zip_url": zip_url,
+                "files_count": len(files)
+            })
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 

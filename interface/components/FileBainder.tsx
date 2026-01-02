@@ -58,7 +58,7 @@ export default function FileBainder({
             setFiles={setFiles}
             onRemove={handleRemoveFile}
             SelectType={SelectType}
-            operationtype={optype as "convert" | "merge" | "compress" | "split"}
+            operationtype={optype as "convert" | "merge" | "compress" | "split" | "protect"}
             title={title}
           />
         </div>

@@ -5,7 +5,7 @@ import React from "react";
 interface LoadingScreenProps {
   subtitle?: string;
   className?: string;
-  operationtype?: "convert" | "merge" | "compress" | "split";
+  operationtype?: "convert" | "merge" | "compress" | "split" | "protect";
 }
 
 const operationMessages: Record<NonNullable<LoadingScreenProps["operationtype"]>, string> = {
@@ -13,6 +13,7 @@ const operationMessages: Record<NonNullable<LoadingScreenProps["operationtype"]>
   merge: "Merging files",
   compress: "Compressing files",
   split: "Splitting files",
+  protect: "Protecting files",
 };
 
 export default function LoadingScreen({

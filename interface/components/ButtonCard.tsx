@@ -36,10 +36,10 @@ const ButtonTitle = [
         image: "/icons/powerpoint.png"
     },
     {
-        title: "HTML to PDF",
-        description: "Easily convert web pages and HTML files to PDF format.",
-        link: "/html_to_pdf",
-        image: "/icons/html.png"
+        title: "Protect PDF",
+        description: "Easily protect your PDF files with passwords and permissions.",
+        link: "/protect_pdf",
+        image: "/icons/unlock.png"
     },
     {
         title: "Excel to PDF",

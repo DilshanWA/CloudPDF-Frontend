@@ -3,7 +3,7 @@ import FileUpload from '@/components/FileUpload';
 import  FileList from '@/components/FileList';
 import FileBinder from '@/components/FileBainder';
 
-type FileType = "word_to_pdf" | "merge_pdf" | "compress_pdf" | "image_to_pdf" | "powerpoint_to_pdf" | "html_to_pdf" | "excel_to_pdf" | "split_pdf"
+type FileType = "word_to_pdf" | "merge_pdf" | "compress_pdf" | "image_to_pdf" | "powerpoint_to_pdf" | "protect_pdf" | "excel_to_pdf" | "split_pdf"
 
 const fileTypeConfig =  {
     word_to_pdf: {
@@ -46,13 +46,13 @@ const fileTypeConfig =  {
         SelectType: 'PowerPoint',   
         extentions: [".ppt", ".pptx"],
     },
-    html_to_pdf: {   
-        title: "HTML to PDF",
-        optype: 'convert',
-        description: "Easily convert web pages and HTML files to PDF format.",
-        accept: ".html,.htm",
-        SelectType: 'HTML',
-        extentions: [".html", ".htm"],
+    protect_pdf: {   
+        title: "Protect PDF",
+        optype: 'protect',
+        description: "Easily protect your PDF files with passwords and permissions.",
+        accept: ".pdf",
+        SelectType: 'PDF',
+        extentions: [".pdf"],
     },
     excel_to_pdf: {
         title: "Excel to PDF ",
