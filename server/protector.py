@@ -10,7 +10,7 @@ class Protector:
     def protect_pdf(self,file_manager, password):
         path = self.file_manager.save_file(file_manager)
         originalFilename = file_manager.filename.split(".pdf")[0]
-        protected_filename = f"{originalFilename}_protected_.pdf"
+        protected_filename = f"{originalFilename}_{uuid.uuid4().hex}_protected_.pdf"
         protected_path = os.path.join(self.file_manager.upload_folder, protected_filename)
 
         try:

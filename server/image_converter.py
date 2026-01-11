@@ -37,7 +37,7 @@ class Image_converter():
 
         filepath = self.file_manager.save_file(file)
 
-        pdf_filename = f"{name}_converted.pdf"
+        pdf_filename = f"{name}_{uuid.uuid4().hex}_converted.pdf"
         pdf_path = os.path.join(self.file_manager.upload_folder, pdf_filename)
         self.image_to_a4_pdf(filepath, pdf_path)
         self.file_manager.remove_file(filepath)

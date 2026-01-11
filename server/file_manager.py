@@ -1,4 +1,5 @@
 import os
+import shutil
 import zipfile
 
 class FileManager:
@@ -10,7 +11,15 @@ class FileManager:
 
     def save_file(self, file):
         filepath = os.path.join(self.upload_folder, file.filename)
-        file.save(filepath)
+        # FastAPI UploadFile
+        if hasattr(file, "file"):
+            with open(filepath, "wb") as buffer:
+                shutil.copyfileobj(file.file, buffer)
+
+        # Flask FileStorage (backward compatible)
+        else:
+            file.save(filepath)
+
         return filepath
 
     def remove_file(self, filepath):

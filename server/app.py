@@ -1,6 +1,9 @@
+from fastapi import FastAPI, File, UploadFile, Request,HTTPException,Form
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import FileResponse, StreamingResponse
+import os
 import uuid
-from flask import Flask, request, jsonify, url_for, send_from_directory
-from flask_cors import CORS
+from typing import List
 
 from file_manager import FileManager
 from converter import Converter
@@ -10,10 +13,15 @@ from protector import Protector
 from split import PdfSpliter
 from image_converter import Image_converter
 
-import os
+app = FastAPI()
 
-app = Flask(__name__)
-CORS(app)
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # Change to your domain in production
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 file_manager = FileManager()
 converter = Converter(file_manager)
@@ -23,275 +31,293 @@ compressor = Compressor(file_manager)
 protector = Protector(file_manager)
 spliter = PdfSpliter(file_manager)
 
-@app.route('/convert', methods=['POST'])
-def convert_endpoint():
-    if 'files' not in request.files:
-        return jsonify({"error": "No files part"}), 400
-    files = request.files.getlist('files')
-    if not files or files[0].filename == '':
-        return jsonify({"error": "No selected files"}), 400
 
-    try:
-        pdf_files = [converter.convert_file(f) for f in files]
+#---------Office to PDF Conversion Endpoint---------#
+@app.post("/convert")
+async def convert_endpoint(
+    request: Request,
+    files: List[UploadFile] = File(...)
+):
+    if not files:
+        return {"error": "No files provided"}
 
-        if len(pdf_files) == 1:
-            pdf_url = url_for('download_file', filename=pdf_files[0], _external=True)
-            return jsonify({
-                "message": "Single file converted",
-                "pdf_file": pdf_files[0],
-                "pdf_url": pdf_url,
-                "files_count": len(files)
-            })
-        else:
-            pdf_paths = [os.path.join(file_manager.upload_folder, pdf) for pdf in pdf_files]
-            zip_id = uuid.uuid4().hex
-            zip_filename = f"converted_{zip_id}.zip"
-            zip_path = file_manager.create_zip(pdf_paths, zip_filename)
-            zip_url = url_for('download_zip', filename=zip_filename, _external=True)
+    pdf_files = []
+    for file in files:
+        pdf = converter.convert_file(file)
+        pdf_filename = os.path.basename(pdf)
+        pdf_files.append(pdf_filename)
 
-            return jsonify({
-                "message": "Multiple files converted and zipped",
-                "zip_file": zip_filename,
-                "zip_url": zip_url,
-                "files_count": len(files)
-            })
-    except Exception as e:
-        return jsonify({"error": str(e)}), 500
-    
-@app.route('/imageconverter', methods=['POST'])
-def image_to_pdf_endpoint():
-    if 'files' not in request.files:
-        return jsonify({"error": "No files part"}), 400
-    files = request.files.getlist('files')
-    if not files or files[0].filename == '':
-        return jsonify({"error": "No selected files"}), 400
-    
-    checkbox = request.form.get('check_box_value', 'false').lower() == 'true'
-
-    try:
-       pdf_files = [image_converter.convert_image_to_pdf(f) for f in files]
-       pdf_paths = [os.path.join(file_manager.upload_folder, pdf) for pdf in pdf_files]
-       
-       if checkbox and len(pdf_files) > 1:
-           
-           merged_pdf_name = f"cloudpdf-merged-images-pdf.pdf"
-           merged_pdf_path = os.path.join(file_manager.upload_folder, merged_pdf_name)
-           
-           merger.merge_pdf_paths(pdf_paths, merged_pdf_path)
-           
-           pdf_url = url_for('download_file', filename=merged_pdf_name, _external=True)
-           return jsonify({
-               "message": "Images converted and merged into single PDF",
-               "pdf_file": merged_pdf_name,
-               "pdf_url": pdf_url,
-               "files_count": len(files)
-           })
-       else:
-           if len(pdf_files) == 1:
-                pdf_url = url_for('download_file', filename=pdf_files[0], _external=True)
-                return jsonify({
-                     "message": "Single image converted to PDF",
-                     "pdf_file": pdf_files[0],
-                     "pdf_url": pdf_url,
-                     "files_count": len(files)
-                })
-           else:
-                zip_id = uuid.uuid4().hex
-                zip_filename = f"image_pdfs_{zip_id}.zip"
-                zip_path = file_manager.create_zip(pdf_paths, zip_filename)
-                zip_url = url_for('download_zip', filename=zip_filename, _external=True)
-
-                return jsonify({
-                    "message": "Multiple images converted to PDFs and zipped",
-                    "zip_file": zip_filename,
-                    "zip_url": zip_url,
-                    "files_count": len(files)
-                })
-    except Exception as e:
-        print(e)
-        return jsonify({"error": str(e)}), 500
-           
-        
-           
-
-
-@app.route('/merge', methods=['POST'])
-def merge_endpoint():
-    if 'files' not in request.files:
-        return jsonify({"error": "No files part"}), 400
-    files = request.files.getlist('files')
-    if not files or files[0].filename == '':
-        return jsonify({"error": "No selected files"}), 400
-
-    try:
-        merged_pdf = merger.merge_pdfs(files)
-        pdf_url = url_for('download_file', filename=merged_pdf, _external=True)
-
-        return jsonify({
-            "message": "PDFs merged successfully",
-            "pdf_file": merged_pdf,
+    if len(pdf_files) == 1:
+        pdf_url = str(
+            request.url_for("download_file", filename=pdf_files[0])
+        )
+        return {
+            "message": "File converted successfully",
+            "pdf_file": pdf_files[0],
             "pdf_url": pdf_url,
-            "files_count": len(files)
-        })
-    except Exception as e:
-        print(e)
-        return jsonify({"error": str(e)}), 500
+            "file_count": len(pdf_files)
+        }
 
+    zip_id = uuid.uuid4().hex
+    zip_filename = f"converted_{zip_id}.zip"
+    pdf_paths = [
+        os.path.join(file_manager.upload_folder, f)
+        for f in pdf_files
+    ]
+    file_manager.create_zip(pdf_paths, zip_filename)
 
-@app.route('/compress', methods=['POST'])
-def compress_endpoint():
-    if 'files' not in request.files:
-        return jsonify({"error": "No files part"}), 400
-    files = request.files.getlist('files')
-    if not files or files[0].filename == '':
-        return jsonify({"error": "No selected file"}), 400
+    zip_url = str(
+        request.url_for("download_zip", filename=zip_filename)
+    )
 
-    quality = request.form.get('qualityOption', 'medium').lower()
-    if quality not in ['low', 'medium', 'high']:
-        quality = 'medium'
+    return {
+        "message": "Files converted successfully",
+        "zip_file": zip_filename,
+        "zip_url": zip_url,
+        "file_count": len(pdf_files)
+    }
 
-    try:
-        compressed_pdf = compressor.compress(files[0], quality)
-        pdf_url = url_for('download_file', filename=compressed_pdf, _external=True)
+#---------PDF Merge Endpoint---------#
+@app.post("/merge")
+async def merge_endpoint(
+    request: Request,
+    files: List[UploadFile] = File(...)
+):
+    if not files:
+        return {"error": "No files provided"}
 
-        return jsonify({
-            "message": "PDF compressed successfully",
-            "pdf_file": compressed_pdf,
+    merged_pdf = merger.merge_pdfs(files)
+
+    pdf_url = str(
+        request.url_for("download_file", filename=merged_pdf)
+    )
+
+    return {
+        "message": "Files merged successfully",
+        "pdf_file": merged_pdf,
+        "pdf_url": pdf_url,
+        "file_count": len(merged_pdf)
+    }
+
+#---------PDF Compress Endpoint---------#
+@app.post("/compress")
+async def compress_endpoint(
+    request: Request,
+    files: List[UploadFile] = File(...),
+    qualityOption: str = "medium"
+):
+    if not files:
+        return {"error": "No files provided"}
+    compressed_pdfs = []
+    for file in files:
+        compressed_pdf = compressor.compress(file, qualityOption)
+        compressed_pdfs.append(compressed_pdf)
+
+    if len(compressed_pdfs) == 1:
+        pdf_url = str(
+            request.url_for("download_file", filename=compressed_pdfs[0])
+        )
+        return {
+            "message": "File compressed successfully",
+            "pdf_file": compressed_pdfs[0],
             "pdf_url": pdf_url,
-            "quality": quality
-        })
-    except Exception as e:
-        print(e)
-        return jsonify({"error": str(e)}), 500
+            "file_count": len(compressed_pdfs)
+        }
 
+    zip_id = uuid.uuid4().hex
+    zip_filename = f"compressed_{zip_id}.zip"
+    pdf_paths = [
+        os.path.join(file_manager.upload_folder, f)
+        for f in compressed_pdfs
+    ]
+    file_manager.create_zip(pdf_paths, zip_filename)
 
-@app.route('/protect', methods=['POST'])
-def protect_endpoint():
-    if 'files' not in request.files:
-        return jsonify({"error":" No files part"}), 400
-    files = request.files.getlist('files')
-    if not files or files[0].filename == '':
-        return jsonify({"error": "No selected file"}), 400
-    password = request.form.get('password', '')
-    if not password:
-        return jsonify({"error": "No password provided"}), 400
-    try:
-        pdf_files = [protector.protect_pdf(f, password) for f in files]
-        
-        if len(pdf_files) == 1:
-            pdf_url = url_for('download_file', filename=pdf_files[0], _external=True)
-            return jsonify({
-                "message": "Single PDF protected successfully",
-                "pdf_file": pdf_files[0],
-                "pdf_url": pdf_url,
-                "files_count": len(files)
-            })
-            
-        else:
-            pdf_paths = [os.path.join(file_manager.upload_folder, pdf) for pdf in pdf_files]
-            zip_id = uuid.uuid4().hex
-            zip_filename = f"protected_{zip_id}.zip"
-            zip_path = file_manager.create_zip(pdf_paths, zip_filename)
-            zip_url = url_for('download_zip', filename=zip_filename, _external=True)
+    zip_url = str(
+        request.url_for("download_zip", filename=zip_filename)
+    )
 
-            return jsonify({
-                "message": "Multiple PDFs protected and zipped successfully",
-                "zip_file": zip_filename,
-                "zip_url": zip_url,
-                "files_count": len(files)
-            })
-    except Exception as e:
-        return jsonify({"error": str(e)}), 500
+    return {
+        "message": "Files compressed successfully",
+        "zip_file": zip_filename,
+        "zip_url": zip_url,
+        "file_count": len(compressed_pdfs)
+    }
 
-
-
-@app.route('/split', methods=['POST'])
-def split_endpoint():
-    if 'files' not in request.files:
-        return jsonify({"error": "No files part"}), 400
-    files = request.files.getlist('files')
-    if not files or files[0].filename == '':
-        return jsonify({"error": "No selected file"}), 400
+#---------Image to PDF Conversion Endpoint---------#
+@app.post("/imageconverter")
+async def image_to_pdf_endpoint(
+    request: Request, 
+    files: List[UploadFile] = File(...), 
+    check_box_value: bool = Form(False)
+):
+    if not files:
+        return {"error": "No files provided"}
     
-    mode = request.form.get('mode', 'allPages').lower()
-    page_range = request.form.get('page_range', '')
-    merge_custom_split = request.form.get('split_checkbox', 'false').lower() == 'true'
+    pdf_filenames = []
+    for file in files:
+        pdf_full_path = image_converter.convert_image_to_pdf(file)
+        filename_only = os.path.basename(pdf_full_path)  # ✅ ensures just the filename
+        pdf_filenames.append(filename_only)
+        
+    if check_box_value and len(pdf_filenames) > 1:
+        merged_image_pdf_name = "cloudpdf-merged-images-pdf.pdf"
+        merged_image_pdf_path = os.path.join(file_manager.upload_folder, merged_image_pdf_name)
+        
+        merger.merge_pdf_paths([os.path.join(file_manager.upload_folder, f) for f in pdf_filenames], merged_image_pdf_path)
+    
+        pdf_url = str(request.url_for("download_file", filename=merged_image_pdf_name))
+        return {
+            "message": "Images converted and merged successfully",
+            "pdf_file": merged_image_pdf_name,
+            "pdf_url": pdf_url,
+            "file_count": 1
+        }
+    else:
+        # Handle single file
+        if len(pdf_filenames) == 1:
+            target_file = pdf_filenames[0]
+            pdf_url = str(request.url_for("download_file", filename=target_file))  # ✅ just filename, not path
+            return {
+                "message": "Image converted successfully",
+                "pdf_file": target_file,
+                "pdf_url": pdf_url,
+                "file_count": 1
+            }
 
+        # Multiple files → create zip
+        zip_id = uuid.uuid4().hex
+        zip_filename = f"images_converted_{zip_id}.zip"
+        pdf_paths = [os.path.join(file_manager.upload_folder, f) for f in pdf_filenames]
+        file_manager.create_zip(pdf_paths, zip_filename)
+
+        zip_url = str(request.url_for("download_zip", filename=zip_filename))
+        return {
+            "message": "Images converted successfully",
+            "zip_file": zip_filename,
+            "zip_url": zip_url,
+            "file_count": len(pdf_filenames)
+        }
+
+#---------Protect PDF Endpoint---------#
+@app.post("/protect")
+async def protect_endpoint(request: Request, files: List[UploadFile] = File(...), password: str = Form(...)):
+    if not files:
+        return {"error": "No files provided"}
+
+    protected_pdfs = []
+    for file in files:
+        protected_pdf = protector.protect_pdf(file, password)
+        protected_pdfs.append(protected_pdf)
+
+    if len(protected_pdfs) == 1:
+        pdf_url = str(
+            request.url_for("download_file", filename=protected_pdfs[0])
+        )
+        return {
+            "message": "File protected successfully",
+            "pdf_file": protected_pdfs[0],
+            "pdf_url": pdf_url,
+            "file_count": len(protected_pdfs)
+        }
+
+    zip_id = uuid.uuid4().hex
+    zip_filename = f"protected_{zip_id}.zip"
+    pdf_paths = [
+        os.path.join(file_manager.upload_folder, f)
+        for f in protected_pdfs
+    ]
+    file_manager.create_zip(pdf_paths, zip_filename)
+
+    zip_url = str(
+        request.url_for("download_zip", filename=zip_filename)
+    )
+
+    return {
+        "message": "Files protected successfully",
+        "zip_file": zip_filename,
+        "zip_url": zip_url,
+        "file_count": len(protected_pdfs)
+    }
+    
+#--------Split PDF Endpoint---------#
+@app.post("/split")
+async def split_endpoint(request: Request, files: List[UploadFile] = File(...), 
+                         split_checkbox: bool = Form(False), 
+                         mode: str = Form(...),
+                         page_range: str = 'allPages'):
+    if not files:
+        return {"error": "No file provided"}
+    
+    splited_pdfs = []
+    print( "Mode:", mode)
     try:
-        split_files = []
-
-        if mode == 'allpages':
+        if mode == "allPages":
             for file in files:
-                split_files.extend(spliter.split_pdf(file))
+                split_files = spliter.split_pdf(file)
+                splited_pdfs.extend(split_files)
 
-        elif mode == 'custom':
+        elif mode == "custom":
             for file in files:
-                split_files.extend(
-                    spliter.split_pdf_custom_range(file, page_range)
-                )
+                split_files = spliter.split_pdf_custom_range(file, page_range)
+                splited_pdfs.extend(split_files)
 
-            if merge_custom_split and len(split_files) > 1:
-                merged_pdf_name = "cloudpdf-merged-split-pdf.pdf"
-                merged_pdf_path = os.path.join(
-                    file_manager.upload_folder, merged_pdf_name
-                )
-
-                pdf_paths = [
-                    os.path.join(file_manager.upload_folder, pdf)
-                    for pdf in split_files
-                ]
-
-                merger.merge_pdf_paths(pdf_paths, merged_pdf_path)
-                split_files = [merged_pdf_name]
-
-        # 🔥 RESPONSE MUST BE OUTSIDE MODE CHECK
-        if len(split_files) == 1:
-            pdf_url = url_for(
-                'download_file',
-                filename=split_files[0],
-                _external=True
+            if split_checkbox == True and len(splited_pdfs) > 1:
+                merge_splited_pdf_name = f"cloudpdf-merged-splited-pdf.pdf"
+                merge_split_pdf_path = os.path.join(file_manager.upload_folder, merge_splited_pdf_name)
+                
+                pdf_paths = [os.path.join(file_manager.upload_folder, f) for f in splited_pdfs]
+                
+                merger.merge_pdf_paths(pdf_paths, merge_split_pdf_path)
+                splited_pdfs = [merge_splited_pdf_name]
+                
+        if len(splited_pdfs) == 1:
+            pdf_url = str(
+                request.url_for("download_file", filename=splited_pdfs[0])
             )
-            return jsonify({
-                "message": "Single PDF split successfully",
-                "pdf_file": split_files[0],
+            return {
+                "message": "File splitted successfully",
+                "pdf_file": splited_pdfs[0],
                 "pdf_url": pdf_url,
-                "files_count": len(files)
-            })
+                "file_count": len(splited_pdfs)
+            }
+                
         else:
-            pdf_paths = [
-                os.path.join(file_manager.upload_folder, pdf)
-                for pdf in split_files
-            ]
             zip_id = uuid.uuid4().hex
             zip_filename = f"splitted_{zip_id}.zip"
+            pdf_paths = [
+                os.path.join(file_manager.upload_folder, f)
+                for f in splited_pdfs
+            ]
             file_manager.create_zip(pdf_paths, zip_filename)
 
-            zip_url = url_for(
-                'download_zip',
-                filename=zip_filename,
-                _external=True
+            zip_url = str(
+                request.url_for("download_zip", filename=zip_filename)
             )
 
-            return jsonify({
-                "message": "Multiple PDFs split and zipped successfully",
+            return {
+                "message": "Files splitted successfully",
                 "zip_file": zip_filename,
                 "zip_url": zip_url,
-                "files_count": len(split_files)
-            })
+                "file_count": len(splited_pdfs)
+            }
     except Exception as e:
-        print(e)    
-        
+        print("Error during splitting:", str(e))
+        raise HTTPException(status_code=500, detail=str(e))
+
+ 
 
 
-@app.route('/download/<filename>', methods=['GET'])
-def download_file(filename):
-    return send_from_directory(file_manager.upload_folder, filename, as_attachment=True)
+@app.get("/download/{filename}")
+async def download_file(filename: str):
+    path = os.path.join(file_manager.upload_folder, filename)
+    if not os.path.exists(path):
+        raise HTTPException(status_code=404, detail="File not found")
+    return FileResponse(path, filename=filename)
 
 
-@app.route('/download/zip/<filename>', methods=['GET'])
-def download_zip(filename):
-    return send_from_directory(file_manager.zip_folder, filename, as_attachment=True)
-
-
-if __name__ == '__main__':
-    app.run(host="0.0.0.0", port=5000)
+@app.get("/download_zip/{filename}")
+async def download_zip(filename: str):
+    path = os.path.join(file_manager.zip_folder, filename)
+    if not os.path.exists(path):
+        raise HTTPException(status_code=404, detail="Zip not found")
+    return FileResponse(path, filename=filename)
