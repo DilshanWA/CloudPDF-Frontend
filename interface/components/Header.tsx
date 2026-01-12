@@ -1,3 +1,5 @@
+'use client';
+
 import Link from 'next/link'
 import React from 'react'
 import { Class } from './../node_modules/zod/v4/core/util';

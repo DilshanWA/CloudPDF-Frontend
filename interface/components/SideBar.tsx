@@ -285,7 +285,7 @@ export function Sidebar({
         disabled={isButtonDisabled()}
         className={`w-full  py-4 rounded font-semibold cursor-pointer text-white transition-colors focus:outline-none ${
           isButtonDisabled()
-            ? "bg-red-300 cursor-not-allowed"
+            ? "bg-primary cursor-not-allowed"
             : "bg-primary hover:bg-primary-dark"
         }`}
         aria-busy={isProcessing}

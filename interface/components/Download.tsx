@@ -1,6 +1,7 @@
-import React, { useEffect } from "react";
+'use client';
+import React, { use, useEffect } from "react";
 import { Download, CheckCircle, Plus } from "lucide-react";
-import ThankyouCard from "./ui/ThankyouCard";
+import ThankyouCard from "./ui/FeedBack";
 
 interface DownloadResultProps {
   title?: string;
@@ -35,7 +36,23 @@ export default function DownloadResult({
     setTimeout(() => {
         setIsgoodtoDownload(true);
     },3000)
+  }, []);
+
+  useEffect(() => {
+    let timer: NodeJS.Timeout;
+    if (isgoodtoDownload) {
+      timer = setTimeout(() => {
+        setIsgoodtoDownload(false);
+      }, 10000); // Close after 10 seconds
+    }
+    return () => {
+      if (timer) {
+        clearTimeout(timer);
+      }
+    };
   })
+
+
 
 
   return (
@@ -84,7 +101,7 @@ export default function DownloadResult({
         )}
        */} 
       </div>
-       {isgoodtoDownload && <ThankyouCard />}
+       
     </div>
   );
 }

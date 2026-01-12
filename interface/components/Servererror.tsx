@@ -29,7 +29,7 @@ export default function Servererror({ errorType }: ServererrorProps) {
             <p className='text-center mt-2 text-gray-600'>Please try again later.</p>
             <button 
             onClick={goBackHome}
-            className=" flex gap-3 mt-10 px-4 py-2 cursor-pointer bg-red-500 text-white rounded-lg hover:bg-red-600 transition">
+            className=" flex gap-3 mt-10 px-4 py-2 cursor-pointer bg-primary text-white rounded-lg hover:bg-primary-dark transition">
               <ArrowLeft className=" flex inline-block mr-2 self-center items-center justify-center" size={20} /> Back to Home
             </button>
         </div>
