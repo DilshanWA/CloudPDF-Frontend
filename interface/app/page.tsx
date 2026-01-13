@@ -2,6 +2,8 @@
 
 import React from 'react'
 import ButtonCard from '@/components/ButtonCard'
+import HowItWorks from './../components/ui/HowitWork';
+import Features from './../components/ui/Feature';
 
 export default function Page() {
   return (
@@ -21,6 +23,10 @@ export default function Page() {
           </p>
         </div>
         <ButtonCard/>
+      </div>
+      <div>
+        <Features/>
+        <HowItWorks/>
       </div>
     </div>
   )

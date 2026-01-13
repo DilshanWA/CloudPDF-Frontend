@@ -6,7 +6,7 @@ import { Class } from './../node_modules/zod/v4/core/util';
 
 export default function Header() {
   return (
-<header className="sticky top-0 z-50 w-full bg-white border-b border-gray-200">
+<header className="sticky top-0 z-40 w-full border-sm border-border bg-white backdrop-blur supports-[backdrop-filter]:bg-white/60">
   <div className="mx-auto max-w-[1400px] px-6">
     <div className="flex h-16 items-center justify-between">
 
@@ -23,12 +23,12 @@ export default function Header() {
       </Link>
 
       
-      <nav className="hidden lg:flex items-center gap-8 text-sm font-bold text-gray-500 relative">
+      <nav className="hidden lg:flex items-center gap-8 text-sm  text-gray-500 relative">
         {/* Dropdown Item */}
         <div className="relative group">
           <Link
             href="/tools"
-            className="hover:text-primary transition flex items-center gap-1"
+            className="hover:text-black transition flex items-center gap-1"
           >
             Convert PDF
             {/* Optional: down arrow */}
@@ -53,12 +53,11 @@ export default function Header() {
         </div>
 
         {/* Other nav items */}
-        <Link href="/merge_pdf" className="hover:text-primary transition">Merge PDFs</Link>
-        <Link href="/split_pdf" className="hover:text-primary transition">Split PDFs</Link>
-        <Link href="/compress_pdf" className="hover:text-primary transition">Compress PDF</Link>
-        <Link href="/tools" className="hover:text-primary transition">All Tools</Link>
-        <Link href="/protect_pdf" className="hover:text-primary transition">Protect PDF</Link>
-
+        <Link href="/merge_pdf" className="hover:text-black transition">Merge PDFs</Link>
+        <Link href="/split_pdf" className="hover:text-black transition">Split PDFs</Link>
+        <Link href="/compress_pdf" className="hover:text-black transition">Compress PDF</Link>
+        <Link href="/tools" className="hover:text-black transition">All Tools</Link>
+        <Link href="/protect_pdf" className="hover:text-black transition">Protect PDF</Link>
       </nav>
 
 

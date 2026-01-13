@@ -55,6 +55,22 @@ export default function Preview({ selectedFileType, file }: PreviewProps) {
           className="w-12 h-12 object-contain"
         />
       )}
+      {/* EXCEL ICON */}
+      {selectedFileType === "Excel" && (
+        <img
+          src="/Icons/excel.png"
+          alt="Excel Icon"
+          className="w-12 h-12 object-contain"
+        />
+      )}
+      {/* POWERPOINT ICON */}
+      {selectedFileType === "PowerPoint" && (
+        <img
+          src="/Icons/powerpoint.png"
+          alt="PowerPoint Icon"
+          className="w-12 h-12 object-contain"
+        />
+      )}
     </div>
   );
 }
