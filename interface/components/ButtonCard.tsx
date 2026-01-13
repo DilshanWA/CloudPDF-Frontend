@@ -4,7 +4,7 @@ import React from 'react'
 
 const ButtonTitle = [
     {
-        title: "Word to PDF",
+        title: "Convert Word to PDF",
         description: "Convert Word documents to PDF format quickly and easily.",
         link: "/word_to_pdf",
         image: '/Icons/word.png'
@@ -23,14 +23,14 @@ const ButtonTitle = [
         image: "/Icons/arrows.png"
     },
     {
-        title: "Image to PDF",
+        title: "Convert Image to PDF",
         description: "Transform images into PDF format quickly and conveniently.",
         link: "/image_to_pdf",
         image: "/Icons/image.png"
        
     },
     {
-        title : "PowerPoint to PDF",
+        title : "Convert PowerPoint to PDF",
         description: "Convert PowerPoint presentations to PDF format seamlessly.",
         link: "/powerpoint_to_pdf",
         image: "/Icons/powerpoint.png"
@@ -42,7 +42,7 @@ const ButtonTitle = [
         image: "/Icons/unlock.png"
     },
     {
-        title: "Excel to PDF",
+        title: "Convert Excel to PDF",
         description: "Convert Excel spreadsheets to PDF format with ease.",
         link: "/excel_to_pdf",
         image: "/Icons/excel.png"
