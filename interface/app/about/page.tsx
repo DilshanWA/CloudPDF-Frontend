@@ -36,7 +36,7 @@ export default function About() {
               complexity, making document conversion easier for everyone.
             </p>
 
-            <p className="font-medium text-black">
+            <p className="">
               CloudPDF is free to use, and I continue improving it with better
               performance and new features.
             </p>
