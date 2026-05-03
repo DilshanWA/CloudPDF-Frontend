@@ -78,13 +78,13 @@ export default async function ConverterPage({params}: {params: Promise<{type: st
   const type = resolvedParams.type.replace(/-/g, '_') as FileType
 
   if (!fileTypeConfig[type]) {
-    return <div className='min-h-screen flex items-center justify-center'>
+    return <div className='flex items-center justify-center'>
       <h1 className='text-2xl font-semibold'>Invalid converter type.</h1>
     </div>
   }
   return (
     <div className='w-full '>
-      <div className='min-h-screen max-w-4xl mx-auto'> 
+      <div className='max-w-4xl mx-auto'> 
         <main className='container flex flex-col text-black font-regular items-center  px-6 mt-20'> 
           <div className='mx-auto max-w-6xl w-full mb-10'>
             <FileBinder

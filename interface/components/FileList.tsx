@@ -119,7 +119,7 @@ export default function FileList({files,setFiles,SelectType,accept,onRemove,titl
   return (
     <div className="w-full md:flex relative">
       {/* LEFT */}
-      <div className="h-screen flex-1 overflow-y-auto  text-white">
+      <div className="flex-1 overflow-y-auto  text-white">
         <div className="pr-4 sticky top-20 z-20 w-auto mb-6 flex flex-col items-end gap-3 md:pr-8 pt-4"> 
           <button 
             className="bg-primary text-white text-4xl h-12 w-12 rounded-full shadow-lg hover:bg-primary-dark cursor-pointer transition-colors flex items-center justify-center"

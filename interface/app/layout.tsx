@@ -1,7 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import Header from "@/components/Header";
+import  Header  from "@/components/Header";
 import { Analytics } from "@vercel/analytics/next"
 
 const geist = Geist({
@@ -86,9 +86,9 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" className={`${geist.variable} ${geistMono.variable}`}>
-      <body className="flex h-screen flex-col overflow-hidden">
+      <body className="flex min-h-screen flex-col">
         <Header />
-        <main className="flex flex-1 overflow-hidden">{children}</main>
+        <main className="flex-1">{children}</main>
         <Analytics />
       </body>
     </html>

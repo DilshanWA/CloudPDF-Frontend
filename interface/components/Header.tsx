@@ -1,12 +1,14 @@
 'use client';
-
+import React, { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
+import { Menu, X } from 'lucide-react';
 
 export default function Header() {
+  const [isOpen, setIsOpen] = useState(false);
   return (
-    <header className="sticky top-0 z-40 w-full border-b border-border bg-white backdrop-blur supports-[backdrop-filter]:bg-white/60">
-      <div className="mx-auto max-w-[1400px] px-6">
+    <header className="sticky top-0 z-40 w-full border-b border-border bg-white backdrop-blur supports-[backdrop-filter]:bg-white/100">
+      <div className="mx-auto max-w-7xl px-6">
         <div className="flex h-16 items-center justify-between">
           
           <div className="flex items-center gap-2">
@@ -21,34 +23,72 @@ export default function Header() {
               />
             </Link>
 
-            <nav className="ml-20 hidden items-center gap-8 text-sm font-normal text-black lg:flex">
-              <Link href="/" className="transition hover:text-primary">
-                Home
-              </Link>
-
-              <Link href="/about" className="transition hover:text-primary">
-                Developers
-              </Link>
-
-              <Link href="/merge_pdf" className="transition hover:text-primary">
-                FeedBack
-              </Link>
-            </nav>
-          </div>
-
-          <div className="flex items-center gap-2">
-            <Link href="/login">
-              <button className="rounded-md bg-transparent px-5 py-2 text-sm font-semibold text-black transition hover:text-primary cursor-pointer">
-                Login
-              </button>
+            <div className="hidden md:flex ml-20 items-center gap-8">
+            <Link
+              href="/"
+              className="text-gray-700 hover:text-blue-600 font-medium transition-colors duration-200"
+            >
+              Home
             </Link>
-
-            <Link href="/signup">
-              <button className="rounded-md bg-primary px-5 py-2 text-sm font-semibold text-white transition hover:bg-primary-dark cursor-pointer">
-                Sign up
-              </button>
+            <Link
+              href="/about"
+              className="text-gray-700 hover:text-blue-600 font-medium transition-colors duration-200"
+            >
+              About Us
+            </Link>
+            <Link
+              href="/feedback"
+              className="text-gray-700 hover:text-blue-600 font-medium transition-colors duration-200"
+            >
+              Feedback
             </Link>
           </div>
+        </div>
+        <button className="hidden md:block px-6 py-2 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-lg font-medium hover:from-blue-700 hover:to-blue-800 transition-all duration-200 shadow-md hover:shadow-lg">
+            Get Started
+          </button>
+
+          {/* Mobile Menu Button */}
+          <button
+            onClick={() => setIsOpen(!isOpen)}
+            className="md:hidden p-2 hover:bg-gray-100 rounded-lg transition-colors"
+          >
+            {isOpen ? (
+              <X className="w-6 h-6 text-gray-700" />
+            ) : (
+              <Menu className="w-6 h-6 text-gray-700" />
+            )}
+          </button>
+
+        {/* Mobile Navigation */}
+        {isOpen && (
+          <div className="md:hidden pb-4 space-y-2 animate-in fade-in slide-in-from-top-2">
+            <Link
+              href="/"
+              className="block px-4 py-2 text-gray-700 hover:bg-blue-50 hover:text-blue-600 rounded-lg transition-colors"
+              onClick={() => setIsOpen(false)}
+            >
+              Home
+            </Link>
+            <Link
+              href="/about"
+              className="block px-4 py-2 text-gray-700 hover:bg-blue-50 hover:text-blue-600 rounded-lg transition-colors"
+              onClick={() => setIsOpen(false)}
+            >
+              About Us
+            </Link>
+            <Link
+              href="/feedback"
+              className="block px-4 py-2 text-gray-700 hover:bg-blue-50 hover:text-blue-600 rounded-lg transition-colors"
+              onClick={() => setIsOpen(false)}
+            >
+              Feedback
+            </Link>
+            <button className="w-full px-4 py-2 mt-2 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-lg font-medium hover:from-blue-700 hover:to-blue-800 transition-all duration-200">
+              Get Started
+            </button>
+          </div>
+        )}
 
         </div>
       </div>
