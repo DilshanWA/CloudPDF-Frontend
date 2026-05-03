@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import Header from "@/components/Header";
+import { Analytics } from "@vercel/analytics/next"
 
 const geist = Geist({
   subsets: ["latin"],
@@ -88,6 +89,7 @@ export default function RootLayout({
       <body className="flex h-screen flex-col overflow-hidden">
         <Header />
         <main className="flex flex-1 overflow-hidden">{children}</main>
+        <Analytics />
       </body>
     </html>
   );
