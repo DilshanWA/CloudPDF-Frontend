@@ -38,13 +38,13 @@ export default function Header() {
 
           <div className="flex items-center gap-2">
             <Link href="/login">
-              <button className="rounded-md bg-transparent px-5 py-2 text-sm font-semibold text-black transition hover:bg-primary-dark">
+              <button className="rounded-md bg-transparent px-5 py-2 text-sm font-semibold text-black transition hover:text-primary cursor-pointer">
                 Login
               </button>
             </Link>
 
             <Link href="/signup">
-              <button className="rounded-md bg-primary px-5 py-2 text-sm font-semibold text-white transition hover:bg-primary-dark">
+              <button className="rounded-md bg-primary px-5 py-2 text-sm font-semibold text-white transition hover:bg-primary-dark cursor-pointer">
                 Sign up
               </button>
             </Link>

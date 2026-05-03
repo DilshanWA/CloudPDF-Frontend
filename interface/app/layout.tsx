@@ -1,56 +1,82 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import Header from "@/components/Header";
 
-const geist = Geist({ subsets: ["latin"], variable: "--font-geist" });
-const geistMono = Geist_Mono({ subsets: ["latin"], variable: "--font-geist-mono" });
+const geist = Geist({
+  subsets: ["latin"],
+  variable: "--font-geist",
+});
+
+const geistMono = Geist_Mono({
+  subsets: ["latin"],
+  variable: "--font-geist-mono",
+});
 
 export const metadata: Metadata = {
   title: {
-    default: 'Free PDF Converter — Convert PDF to Word, Excel, JPG',
-    template: '%s | PDF Converter'
+    default: "Free PDF Converter — Convert PDF to Word, Excel, JPG",
+    template: "%s | PDF Converter",
   },
-  description: 'Convert PDF files online for free. Fast, secure, no signup required. Supports Word, Excel, JPG, PNG and more.',
-  keywords: ['pdf converter', 'pdf to word', 'pdf to excel', 'free pdf converter'],
-  authors: [{ name: 'Dilshan' }],
-  creator: 'Dilshan',
+  description:
+    "Convert PDF files online for free. Fast, secure, no signup required. Supports Word, Excel, JPG, PNG and more.",
+  keywords: [
+    "pdf converter",
+    "pdf to word",
+    "pdf to excel",
+    "free pdf converter",
+  ],
+  authors: [{ name: "Dilshan" }],
+  creator: "Dilshan",
+
+  icons: {
+    icon: [
+      { url: "/favicon.ico" },
+      { url: "/favicon-32x32.png", sizes: "32x32", type: "image/png" },
+    ],
+    apple: "/apple-touch-icon.png",
+  },
+
   openGraph: {
-    type: 'website',
-    locale: 'en_US',
-    url: 'https://cloudpdf.app',
-    title: 'Free PDF Converter',
-    description: 'Convert PDF files online for free.',
-    siteName: 'PDF Converter',
-    images: [{ url: '/og-image.png', width: 1200, height: 630 }],
+    type: "website",
+    locale: "en_US",
+    url: "https://cloudpdf.app",
+    title: "Free PDF Converter",
+    description: "Convert PDF files online for free.",
+    siteName: "PDF Converter",
+    images: [
+      {
+        url: "/og-image.png",
+        width: 1200,
+        height: 630,
+      },
+    ],
   },
+
   twitter: {
-    card: 'summary_large_image',
-    title: 'Free PDF Converter',
-    description: 'Convert PDF files online for free.',
-    images: ['/og-image.png'],
+    card: "summary_large_image",
+    title: "Free PDF Converter",
+    description: "Convert PDF files online for free.",
+    images: ["/og-image.png"],
   },
+
   robots: {
     index: true,
     follow: true,
     googleBot: { index: true, follow: true },
   },
+
   alternates: {
-    canonical: 'https://cloudpdf.app',
+    canonical: "https://cloudpdf.app",
   },
-}
+};
 
-export const viewpoint = {
-    width: "device-width",
-    initialScale: 1,
-    maximumScale: 1,
-    userScalable: false
-}
-
-
-
-export const fonts = { geist, geistMono, }
-
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 1,
+  userScalable: false,
+};
 
 export default function RootLayout({
   children,
@@ -58,12 +84,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
-      <body className="h-screen overflow-hidden flex flex-col">
+    <html lang="en" className={`${geist.variable} ${geistMono.variable}`}>
+      <body className="flex h-screen flex-col overflow-hidden">
         <Header />
-        <main className="flex-1 overflow-hidden flex">
-          {children}
-        </main>
+        <main className="flex flex-1 overflow-hidden">{children}</main>
       </body>
     </html>
   );
