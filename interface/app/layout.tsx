@@ -16,7 +16,7 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: {
-    default: "Free PDF Converter — Convert PDF to Word, Excel, JPG",
+    default: "CloudPDF- Free PDF Converter Online",
     template: "%s | PDF Converter",
   },
   description:
