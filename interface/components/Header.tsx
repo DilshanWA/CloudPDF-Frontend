@@ -62,7 +62,7 @@ export default function Header() {
 
         {/* Mobile Navigation */}
         {isOpen && (
-          <div className="md:hidden pb-4 space-y-2 animate-in fade-in slide-in-from-top-2">
+          <div className="md:hidden space-y-2 animate-in fade-in slide-in-from-top-10 bg-white border border-gray-200 rounded-lg shadow-lg mt-2 absolute right-4 top-16 w-48 p-4">
             <Link
               href="/"
               className="block px-4 py-2 text-gray-700 hover:bg-blue-50 hover:text-blue-600 rounded-lg transition-colors"
