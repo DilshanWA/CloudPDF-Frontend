@@ -1,7 +1,7 @@
-//Loding Screen component to show different operation messages
 'use client';
 
-import React from "react";
+import React, { useEffect, useState } from "react";
+import Image from "next/image";
 
 interface LoadingScreenProps {
   subtitle?: string;
@@ -26,17 +26,34 @@ export default function LoadingScreen({
   className = '',
   ...rest
 }: LoadingScreenProps) {
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm">
-      <div className="bg-white rounded-2xl shadow-xl px-10 py-8 flex flex-col items-center gap-6 w-[320px]">
-  
-        <div className="h-14 w-14 rounded-full border-4 border-gray-200 border-t-primary animate-spin" />
 
-        <div className="text-center">
-          <h2 className="text-lg font-semibold text-gray-900">
-            {operationtype ? operationMessages[operationtype]: "Processing"}
+  const [step, setStep] = useState<"uploading" | "processing">("uploading");
+
+  useEffect(() => {
+    // Change message after 2 seconds (adjust as needed)
+    const timer = setTimeout(() => {
+      setStep("processing");
+    }, 2000);
+
+    return () => clearTimeout(timer);
+  }, []);
+
+  const getMessage = () => {
+    if (step === "uploading") return "Uploading files";
+    return operationtype ? operationMessages[operationtype] : "Processing";
+  };
+
+  return (
+    <div className="fixed inset-0 z-50 flex justify-center bg-white bg-opacity-75 backdrop-blur-sm" {...rest}>
+      <div className="flex flex-col items-center mt-30 gap-4 rounded-lg bg-white p-6">
+        <Image src="/Logo/logo_loading.png" alt="Loading" width={150} height={60}  className="mb-12"/>
+        <div className="h-15 w-15 rounded-full border-6 border-gray-200 border-t-primary animate-spin" />
+
+        <div className="text-center mt-4">
+          <h2 className="text-4xl font-semibold text-gray-900">
+            {operationtype ? operationMessages[operationtype] : "Processing"}
           </h2>
-          <p className="text-sm text-gray-500 mt-1">
+          <p className="text-md text-gray-500 mt-4">
             {subtitle}
           </p>
         </div>

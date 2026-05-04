@@ -14,13 +14,12 @@ export default function Header() {
           <div className="flex items-center gap-2">
             <Link href="/" className="flex items-center gap-2">
               <Image
-                src="/Logo/logo.png"
+                src="/Logo/cloudpdflogo.png"
                 alt="CloudPDF Logo"
-                width={120}
-                height={28}
-                className="h-7 w-auto"
-                priority
+                width={35}
+                height={32}
               />
+              <span className="text-2xl font-bold text-gray-800">Cloud<span className="text-blue-600">PDF</span></span>
             </Link>
 
             <div className="hidden md:flex ml-20 items-center gap-8">

@@ -174,7 +174,7 @@ export default function FileList({files,setFiles,SelectType,accept,onRemove,titl
           onSplitCheckboxChange={handleSplitCheckboxChange}
         />
        {isProcessing && (
-         <LoadingScreen  subtitle="This will may take few second" operationtype={operationtype} />
+         <LoadingScreen   operationtype={operationtype} />
        )}
        {downloadData && ( 
           <DownloadResult fileUrl={downloadData.url} SelectType={SelectType} operationType={operationtype} fileName={downloadData.name}/>
