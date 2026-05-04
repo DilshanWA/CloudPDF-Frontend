@@ -12,11 +12,11 @@ import {
 
 export default function About() {
   return (
-    <main className="w-full flex items-center text-black justify-center">
-     <section className="mx-auto grid max-w-7xl items-center mt-20 gap-12  py-20 sm:px-6 lg:grid-cols-2 ">
+    <main className="w-full flex items-center text-black justify-center ">
+     <section className="mx-auto grid max-w-7xl items-center mt-15 sm:mt-10 gap-12  py-20 sm:px-10 lg:grid-cols-2 ">
         
         {/* LEFT */}
-        <div>
+        <div className="p-6">
           <h1 className="mb-4 text-5xl font-bold tracking-tight">
             Hi, I’m <span className="text-blue-600">Dilshan</span>
           </h1>
