@@ -45,7 +45,7 @@ const ButtonTitle = [
         title: "Excel to PDF",
         description: "Convert Excel spreadsheets to PDF format with ease.",
         link: "/excel_to_pdf",
-        image: "/Icons/excel.png"
+        image: "/Icons/excel_to_pdf.png"
     },
     {
         title: "Split PDF",
