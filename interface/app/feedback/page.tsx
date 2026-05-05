@@ -2,13 +2,17 @@
 
 import { useState } from "react";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 
 export default function Feedback() {
+  const router = useRouter();
   const [form, setForm] = useState({
     name: "",
     email: "",
     message: "",
   });
+  const [submitting, setSubmitting] = useState(false);
+  const [success, setSuccess] = useState(false);
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -16,14 +20,34 @@ export default function Feedback() {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log(form);
-    alert("Feedback sent!");
+    setSubmitting(true);
+    try{
+      const res = await fetch("/api/feedback", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(form),
+      });
+      await new Promise((resolve) => setTimeout(resolve, 2000));
+      setSubmitting(false);
+      const data = await res.json();
+      console.log(data);
+      if (data.success) {
+        router.push("/thankyou");
+        setSuccess(true);
+        setForm({ name: "", email: "", message: "" });
+      }
+    } catch (error) {
+      console.error("Error submitting feedback:", error);
+      setSubmitting(false);
+    }
   };
 
   return (
-    <main className=" flex items-center bg-white text-black">
+    <main className="flex items-center bg-white text-black">
       <section className="mx-auto grid max-w-7xl items-center gap-12 px-4 py-20 sm:px-6 lg:grid-cols-2 lg:px-8">
 
         {/* LEFT - FORM */}
@@ -72,7 +96,7 @@ export default function Feedback() {
               type="submit"
               className="w-full bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 transition"
             >
-              Send Feedback
+              {submitting ? "Sending..." : "Send Feedback"}
             </button>
 
           </form>
