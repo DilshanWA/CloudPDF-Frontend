@@ -57,7 +57,8 @@ export default function Feedback() {
           </h1>
 
           <p className="text-gray-600 mb-8 text-lg">
-            Have suggestions or found an issue? I’d love to hear from you.
+            We value your feedback. Your thoughts help us improve CloudPDF and
+             create a better experience for everyone. Please take a moment to share your experience with us.
           </p>
 
           <form onSubmit={handleSubmit} className="space-y-5">

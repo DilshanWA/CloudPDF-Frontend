@@ -25,20 +25,20 @@ export default function About() {
             Software Engineer
           </p>
 
-          <div className="space-y-2 text-lg leading-8 text-gray-700 text-justify">
+          <div className="space-y-3 text-lg leading-8 text-gray-700 text-justify">
             <p>
-              I’m the developer behind <span className="font-bold text-black">CloudPDF</span>. I built this project in 2025
-              to make working with PDF files simple, fast, and accessible.
+              I built this project in 2025 with a clear goal — to make working with PDF
+              files simple, fast, and accessible for everyone.
             </p>
 
             <p>
-              The goal is to create a clean and reliable tool without unnecessary
-              complexity, making document conversion easier for everyone.
+              CloudPDF focuses on delivering a clean and reliable experience without
+              unnecessary complexity, making document conversion effortless.
             </p>
 
-            <p className="">
-              CloudPDF is free to use, and I continue improving it with better
-              performance and new features.
+            <p>
+              The platform is free to use, and I continuously improve it with better
+              performance, new features, and a user-first approach.
             </p>
           </div>
 
